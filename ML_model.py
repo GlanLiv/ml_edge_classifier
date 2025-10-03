@@ -29,10 +29,12 @@ def load_images_from_folder(folder, label, img_size):
         if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp')):
             img_path = os.path.join(folder, filename)
             try:
-                img = Image.open(img_path).convert('L')  # 'L' = Grayscale
-                img_resized = img.resize((img_size, img_size))
-                images.append(np.array(img_resized))
-                labels.append(label)
+                with Image.open(img_path) as img:
+                    img = img.convert('L')  # Graustufen
+                    img = img.resize((img_size, img_size))
+                    img_np = np.array(img)
+                    images.append(img_np)
+                    labels.append(label)
             except Exception as e:
                 print(f"⚠️ Failed to load {img_path}: {e}")
     return images, labels
