@@ -7,6 +7,7 @@ from tensorflow.keras import layers, models
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras import backend as K
 import matplotlib.pyplot as plt
+from PIL import Image
 
 #pip install numpy opencv-python tensorflow scikit-learn matplotlib
 
@@ -27,11 +28,13 @@ def load_images_from_folder(folder, label, img_size):
     for filename in os.listdir(folder):
         if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp')):
             img_path = os.path.join(folder, filename)
-            img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-            if img is not None:
-                img_resized = cv2.resize(img, (img_size, img_size))
-                images.append(img_resized)
+            try:
+                img = Image.open(img_path).convert('L')  # 'L' = Grayscale
+                img_resized = img.resize((img_size, img_size))
+                images.append(np.array(img_resized))
                 labels.append(label)
+            except Exception as e:
+                print(f"⚠️ Failed to load {img_path}: {e}")
     return images, labels
 
 # Plot training history
